@@ -37,9 +37,47 @@ class PlotableFunction:
         
     def __call__(self, *args: Any, **kwds: Any) -> Any:
         self.__plot();
+
+class Plotable:
+    """Interface for plotable classes
+    """
+    def __init__(self, dataObject: Any, config:dict={}):
+        self.configure(config);
+        self.setDataObject(dataObject);
+    
+    def configure(self, config:dict={}) -> None:
+        if(config == {}):
+            self.config = config;
+        else:
+            raise NotImplemented();
+    
+    def setDataObject(self, dataObect:Any) -> None:
+        self.data = dataObect;
         
+    def plot(self) -> None:
+        pass;
+    
+    def __call__(self):
+        return self.plot();
+    
+class PlotableDataPoints(Plotable):
+    def __init__(self, dataPoints:list[tuple[float, float]], config:dict={}):
+        super().__init__(dataPoints, config);
+    
+    def plot(self) -> None:
+        import matplotlib.pyplot as plt;
+        fig, ax = plt.subplots();
+        ax.plot([coord[0] for coord in self.data], [coord[1] for coord in self.data]);
+        ax.set(xlabel="x", ylabel="y", title="data points");
+        if(self.config["grid"] == True):
+            ax.grid();
+            
+        fig.savefig("data_points__plot.png");
+        plt.show();
+            
+
 if __name__ == '__main__':
     def f(x) -> float:
-        return x**2;
+        return x**3;
     
-    PlotableFunction(f, {})();
+    PlotableDataPoints([(0,0), (1,1), (2,2), (3,8), (4,15), (5,24)], {})();
