@@ -46,10 +46,7 @@ class Plotable:
         self.setDataObject(dataObject);
     
     def configure(self, config:dict={}) -> None:
-        if(config == {}):
-            self.config = config;
-        else:
-            raise NotImplemented();
+        self.config = config;
     
     def setDataObject(self, dataObect:Any) -> None:
         self.data = dataObect;
@@ -94,20 +91,50 @@ class PlotableFunction(Plotable):
         fig, ax = plt.subplots();
         ax.plot([coord for coord in self.inputs], [self.function(x) for x in self.inputs], ".b-");
         ax.set(xlabel="x", ylabel="y", title="y = f(x)");
-        ax.grid();
-        
+                
         try:
             if(self.config["saveFigure"]):    
                 fig.savefig("function__plot.png");
+            if(self.config["grid"]):
+                ax.grid();
         except Exception as e:
-            pass;
+            print(e);
         plt.show();  
 
+class Solver:
+    """Solves numeric functions through Newton's method for root-finding.
+    """
+    __slots__ = ['fun', 'roots', ];
+    
+    def __init__(self, fun: FunctionType):
+        self.fun = fun;
+        self.roots = self.solve();
+        
+    def solve(self) -> list[float]:
+        """Uses a binary approach"""
+        from scipy.misc import derivative;
+        
+        dx:float = 1e-4;
+        x_value:float = 1;
+        niter:int = 100;
+        roots:list[float] = [];
+        
+        while(niter > 0):
+            x_value = x_value - (self.fun(x_value) / derivative(self.fun, x_value, dx));
+            print(x_value, niter)
+            niter-=1;
+            if(abs(self.fun(x_value)) < dx):
+                roots.append(x_value);
+        
+        roots.append(x_value);
+        
+        return (roots);
+    
+    def __call__(self) -> str:
+        return f"Solver[func={self.fun.__name__}, roots=({self.roots})]";
+        
 if __name__ == '__main__':
     def f(x) -> float:
-        return x**3;
+        return math.cos(x)
     
-    pf = PlotableFunction(f, [0, 1, 2, 3, 4], {});
-    print(pf.function);
-    print(pf.inputs)
-    pf();
+    print(Solver(f)())
