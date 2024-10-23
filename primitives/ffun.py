@@ -66,7 +66,7 @@ class PlotableDataPoints(Plotable):
     def plot(self, saveFigure:bool=False) -> None:
         import matplotlib.pyplot as plt;
         fig, ax = plt.subplots();
-        ax.plot([coord[0] for coord in self.data], [coord[1] for coord in self.data], "o");
+        ax.scatter([coord[0] for coord in self.data], [coord[1] for coord in self.data], "o");
         ax.set(xlabel="x", ylabel="y", title="data points");
         ax.grid();
         
@@ -134,7 +134,4 @@ class Solver:
         return f"Solver[func={self.fun.__name__}, roots=({self.roots})]";
         
 if __name__ == '__main__':
-    def f(x) -> float:
-        return math.cos(x)
     
-    print(Solver(f)())

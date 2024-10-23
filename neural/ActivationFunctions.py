@@ -73,10 +73,51 @@ class ReLU(ParametricRectifier):
     def __init__(self):
         super(ReLU, self).__init__(0);
 
+class LeakyReLU(ParametricRectifier):
+    """Implmementation of the Rectified Linear Unit (ReLU) function in its `Leaky` variant. The unit is active when the input is greater than 0.
+    If the input is equal to 0, the output is multiplied by a negative coefficient."""
+    def __init__(self, negative_slope: float):
+        super(LeakyReLU, self).__init__(0);
+        self.negative_slope = negative_slope;
+        
+    def __call__(self, x: float) -> float:
+        """
+        Calls the Leaky ReLU function to calculate the output value for the given input.
+
+        Parameters:
+            x (float): The input value to calculate the Leaky ReLU function.
+
+        Returns:
+            float: The output value after applying the Leaky ReLU function to the input.
+        """
+        if x > 0:
+            return x;
+        else:
+            return x * self.negative_slope;
+
+
+class SoftPlus(ActivationFunction):
+    """Implementation of the SoftPlus function as an activation function. The unit is active when the input is greater than 0."""
+    def __call__(self, x: float) -> float:
+        """
+        Calls the SoftPlus function to calculate the output value for the given input.
+
+        Parameters:
+            x (float): The input value to calculate the SoftPlus function.
+
+        Returns:
+            float: The output value after applying the SoftPlus function to the input.
+        """
+        return math.log(1 + math.exp(x));
+
 
 if __name__ == '__main__':
-    activation = ReLU();
+    for i in range(-10, 10):
+        print(f"{i} -> SigmoidFunction({i}) = {SigmoidFunction()(i)}");
+        print(f"{i} -> HyperbolicTangent({i}) = {HyperbolicTangent()(i)}");
+        print(f"{i} -> ReLU({i}) = {ReLU()(i)}");
+        print(f"{i} -> LeakyReLU({i}) = {LeakyReLU(0.1)(i)}");
+        print(f"{i} -> SoftPlus({i}) = {SoftPlus()(i)}");
+        print()
+        
     
-    print(activation(0));
-    print(activation(1));
-    print(activation(-1));
