@@ -50,7 +50,7 @@ def test(dataloader: DataLoader, model: nn.Module, loss_fn: nn.Module) -> None:
     test_loss, correct = 0, 0;
     with torch.no_grad():
         for X, y in dataloader:
-            X, y = X.to(device), y.to(device);
+            X, y = X.to(None), y.to(None);
             pred = model(X);
             test_loss += loss_fn(pred, y).item();
             correct += (pred.argmax(1) == y).type(torch.float).sum().item();
@@ -95,7 +95,7 @@ def main() -> None:
     loss_fn = nn.CrossEntropyLoss();
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-3);
 
-    epochs = 1;
+    epochs = 2;
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------------------");
         train(train_dataloader, model, loss_fn, optimizer);
