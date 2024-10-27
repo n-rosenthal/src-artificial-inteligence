@@ -31,6 +31,12 @@ class Validator:
                 if self.grid[i][j] == 0:
                     self.empty_positions.append(((i, j), (i, j)));
                     self.value = self.value - 1;
+        
+        # Compute values
+        self.validate();
+        self.invalid_positions = sorted(self.invalid_positions, key=lambda x: (x[0][0], x[0][1], x[1][0], x[1][1]));
+        self.value = self.value -len(self.invalid_positions) + 81;
+        
                     
     def validate(self) -> bool:
         """Validates the Sudoku grid."""
@@ -89,15 +95,11 @@ class Validator:
         return rtn;
     
     def __call__(self):
-        self.validate();
-        self.invalid_positions = sorted(self.invalid_positions, key=lambda x: (x[0][0], x[0][1], x[1][0], x[1][1]));
-        self.value = self.value -len(self.invalid_positions) + 81;
-        
         return f"""
-        Value: {self.value}
-        Grid:\n {self.grid}
-        Empty positions: {len(self.empty_positions)} \n {self.empty_positions}
-        Invalid positions: {len(self.invalid_positions)} \n {self.invalid_positions}"""
+            Value: {self.value}
+            Grid:\n {self.grid}
+            Empty positions: {len(self.empty_positions)} \n {self.empty_positions}
+            Invalid positions: {len(self.invalid_positions)} \n {self.invalid_positions}"""
     
 def getValidSudoku() -> np.array:
     """Returns a valid 9x9 Sudoku grid."""

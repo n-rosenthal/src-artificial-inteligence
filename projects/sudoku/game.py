@@ -3,12 +3,13 @@
 import numpy as np;
 import random;
 from Validator import Validator;
+from listfun import swap, sremove, sremove_empty, snum_constraints, sconstraints, dist;
 
 class Sudoku:
     """A Sudoku grid is a 9x9 grid of numbers."""
     def __init__(self, grid: np.array):
-        self.grid = grid;
-        self.value = self._getValue();
+        self.grid   = grid;
+        self.value  = self._getValue();
         
     def _getValue(self) -> int:
         """
@@ -18,7 +19,6 @@ class Sudoku:
             int: The value of the Sudoku grid.
         """
         validator = Validator(self.grid);
-        validator();
         return validator.value;
     
     def move(self, position: tuple[int, int], value: int) -> None:
@@ -40,6 +40,14 @@ class Sudoku:
     
     def __call__(self) -> int:
         return self.value;
+
+    @property
+    def empty_positions(self) -> list[tuple[int, int]]:
+        for i in range(9):
+            for j in range(9):
+                if self.grid[i][j] == 0:
+                    yield (i, j);
+        return [];
 
 ITER:int = 0;
 
