@@ -54,7 +54,7 @@ def s_pos_value(iter: np.array, x: int, y: int) -> int:
     if this == 0:
         return s_value_line(s_get_row(iter, x)) + s_value_line(s_get_col(iter, y)) + s_value_block(s_get_block(iter, s_which_block(iter, x, y)));
     else:
-        return s_value_line(s_get_row(iter, x)) + s_value_line(s_get_col(iter, y)) + s_value_block(s_get_block(iter, s_which_block(iter, x, y))) - 3*this;
+        return s_value_line(s_get_row(iter, x)) + s_value_line(s_get_col(iter, y)) + s_value_block(s_get_block(iter, s_which_block(iter, x, y)))
 
 def s_values_map(iter: np.array) -> np.array:
     """Returns a 9x9 array with the value of each element in `iter`"""
