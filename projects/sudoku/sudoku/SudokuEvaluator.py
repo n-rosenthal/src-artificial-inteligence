@@ -66,7 +66,7 @@ class Evaluator:
             has a value of -81.
         """
         return Evaluator.eval_lines(Splitter.get_rows(board)) + Evaluator.eval_lines(Splitter.get_cols(board)) + Evaluator.eval_lines(Splitter.get_squares(board));
-    
+           
     @staticmethod
     def evaluate(board: Board) -> Dict[str, List[Tuple[int, int]]]:
         """
@@ -87,3 +87,127 @@ class Evaluator:
             "initial_values" : len(Splitter.get_initial_values(board)),
             "is_solved" : Evaluator.eval_board(board) == 0
         };
+        
+class ConstraintsFinder:
+    """
+    Static methods for finding, counting and presenting constraints for positions in a Sudoku board.
+    
+    Methods:
+    --------
+        get_constraints(board: Board, position: Tuple[int, int]) -> Set[int]
+            Given an empty position in the board, returns a set of values that cannot be in that position.
+        get_constraints(positions: List[Tuple[int, int]]) -> Dict[Tuple[int, int], Set[int]]
+            Given a list of empty positions in the board, returns a dictionary of sets of values that cannot be in those positions.
+        constraints_map(board: Board) -> List[List[int]]
+            Given a Sudoku board, returns a matrix of constraints for each position in the board (0, if the position wasn't empty on `board`).
+        get_most_constrained(board: Board) -> Tuple[Tuple[int, int], int]
+            Given a Sudoku board, returns the position with the most constraints and its number of constraints
+        constraints_sort(board: Board) -> List[Tuple[Tuple[int, int], int]]
+            Given a Sudoku board, returns a list of tuples of positions and their number of constraints sorted by number of constraints in descending order
+    
+    Examples:
+    --------
+        Get the constraints for a specific position:
+        >>> constraints = ConstraintsFinder.get_constraints(board, (0, 0));
+        
+        Get the constraints for all positions
+        >>> all_constraints = ConstraintsFinder.get_constraints(board);
+        
+        Get a matrix of constraints for a given board
+        >>> constraints_matrix = ConstraintsFinder.constraints_map(board);
+        
+        Get the most constrained position in a given board
+        >>> position = ConstraintsFinder.get_most_constrained(board);
+        
+        Get the list of empty positions of a given board, sorted in descended order by number of constraints.
+        >>> positions = ConstraintsFinder.constraints_sort(board);
+        >>> positions == sorted(board.get_empty_positions(), lambda x: len(ConstraintsFinder.get_constraints(board, x)), reversed=True);
+    """
+    def __init__(self) -> None:
+        """
+        Empty builder for the ConstraintsFinder class. Initializes the ConstraintsFinder object.
+
+        Does nothing, as the object contains only static methods and no instance variables are needed.
+        """
+        pass;
+    
+    @staticmethod
+    def get_constraints(board: Board, position: Tuple[int, int] | Position | None) -> Set[int] | Dict[Tuple[int, int], Set[int]]:
+        """
+        Given an empty position in the board, returns a set of values that cannot be in that position.
+        
+        Parameters:
+        -----------
+            board (Board):
+                A 2D list of Sudoku positions representing the board.
+            position (Tuple[int, int] | Position | None):
+                A tuple representing the position of the empty position in the board.
+
+        Returns:
+        --------
+            Set[int], if position is a tuple
+                A set of values that cannot be in the empty position in the board.
+            Dict[Tuple[int, int], Set[int]], if position is None
+                A dictionary of sets of values that cannot be in the empty positions in the board.
+        """
+        if position is None:
+            empty_positions = Splitter.get_empty_positions(board);
+            return {pos: ConstraintsFinder.get_constraints(board, pos) for pos in empty_positions};
+        else:
+            return set(range(1, 10)) - set(Splitter.get_row(board, position[0]) + Splitter.get_col(board, position[1]) + Splitter.get_square(board, position[0], position[1]));
+        
+    @staticmethod
+    def constraints_map(board: Board) -> List[List[int]]:
+        """
+        Given a Sudoku board, returns a matrix of constraints for each position in the board (0, if the position wasn't empty on `board`).
+        
+        Parameters:
+        -----------
+            board (Board):
+                Sudoku grid positions representing the board.
+
+        Returns:
+        --------
+            List[List[int]]:
+                A matrix of constraints for each position in the board.
+        """
+        return [[ConstraintsFinder.get_constraints(board, (i, j)) for j in range(9)] for i in range(9)];
+        
+    @staticmethod
+    def get_most_constrained(board: Board) -> Tuple[Tuple[int, int], int]:
+        """
+        Given a Sudoku board, returns the position with the most constraints and its number of constraints.
+        
+        Parameters:
+        -----------
+            board (Board):
+                A 2D list of Sudoku positions representing the board.
+
+        Returns:
+        --------
+            Tuple[Tuple[int, int], int]:
+                A tuple containing the position with the most constraints and its number of constraints.
+        """
+        return max(ConstraintsFinder.get_constraints(board).items(), key=lambda x: len(x[1]));
+        
+    @staticmethod
+    def constraints_sort(board: Board) -> List[Tuple[Tuple[int, int], int]]:
+        """
+        Given a Sudoku board, returns a list of tuples of positions and their number of constraints sorted by number of constraints in descending order.
+        
+        Parameters:
+        -----------
+            board (Board):
+                A 2D list of Sudoku positions representing the board.
+
+        Returns:
+        --------
+            List[Tuple[Tuple[int, int], int]]:
+                A list of tuples containing the positions and their number of constraints sorted by number of constraints in descending order.
+        """
+        return sorted(ConstraintsFinder.get_constraints(board).items(), key=lambda x: len(x[1]), reverse=True);
+    
+                    
+                
+        
+    
